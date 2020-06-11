@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{% static 'styles/layout.css' %}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'scripts/layout.js' %}"></script>
+        <title>Pizza Webpage</title>
+    </head>
+    <body>
+        <div class = "container-fluid bg-danger">
+            <div class ="row">
+                <div class = "col align-self-start pl-5">
+                    <img src="{% static 'styles/Logo.png' %}">
+                </div>
+                <div class = "col pr-5 pb-4 align-self-end text-right">
+                    <a class="text">Login/Logout/Cart Stuff<a>
+                </div>
+            </div>
+        </div>
+        <div class = "container">
+            <div class="row justify-content-center p-5 m-3">
+                <button type="button" class="Pizza btn btn-outline-dark m-4">Pizzas</button>
+                <button type="button" class="Sub btn btn-outline-dark m-4">Subs</button>
+                <button type="button" class="Pasta btn btn-outline-dark m-4">Pastas</button>
+                <button type="button" class="Salad btn btn-outline-dark m-4">Salads</button>
+                <button type="button" class="Platter btn btn-outline-dark m-4">Platters</button>
+            </div>
+        </div>
+    </body>
+</html>
