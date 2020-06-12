@@ -20,12 +20,18 @@
             </div>
         </div>
         <div class = "container">
-            <div class="row justify-content-center p-5 m-3">
-                <button type="button" class="Pizza btn btn-outline-dark m-4">Pizzas</button>
-                <button type="button" class="Sub btn btn-outline-dark m-4">Subs</button>
-                <button type="button" class="Pasta btn btn-outline-dark m-4">Pastas</button>
-                <button type="button" class="Salad btn btn-outline-dark m-4">Salads</button>
-                <button type="button" class="Platter btn btn-outline-dark m-4">Platters</button>
+            <div class="row justify-content-center">
+                <form class = "justify-content-center p-5 m-3">{% csrf_token %}
+                    <button type="button" class="Pizza Selector btn btn-outline-dark m-4">Pizzas</button>
+                    <button type="button" class="Sub Selector btn btn-outline-dark m-4">Subs</button>
+                    <button type="button" class="Pasta Selector btn btn-outline-dark m-4">Pastas</button>
+                    <button type="button" class="Salad Selector btn btn-outline-dark m-4">Salads</button>
+                    <button type="button" class="Platter Selector btn btn-outline-dark m-4">Platters</button>
+                    </form>
+            </div>
+        </div>
+        <div class = "container">
+            <div class = "Response row">
             </div>
         </div>
     </body>

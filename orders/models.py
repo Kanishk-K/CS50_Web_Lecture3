@@ -1,38 +1,39 @@
 from django.db import models
 
 # Create your models here.
-class Pizza(models.Model):
+size = (('Small', 'Small'), ("Large", "Large"))
+class Pizzas(models.Model):
     name = models.CharField(max_length=64)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
     toppings = models.IntegerField()
-    size = models.CharField(max_length=64)
+    size = models.CharField(max_length=5,choices=size)
 
     def __str__(self):
-        return f"{self.name} is a {self.size} pizza with {self.toppings} toppings which costs ${self.price}."
+        return f"{self.name} Pizza is a {self.size} pizza with {self.toppings} toppings which costs {self.price}."
 
 class PizzaToppings(models.Model):
     name = models.CharField(max_length=64)
 
-class Sub(models.Model):
+class Subs(models.Model):
     name = models.CharField(max_length=64)
-    price = models.FloatField()
-    size = models.CharField(max_length=64)
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    size = models.CharField(max_length=5,choices=size)
 
 class SubToppings(models.Model):
     name = models.CharField(max_length=64)
-    size = models.CharField(max_length=64)
-    price = models.FloatField()
+    size = models.CharField(max_length=5,choices=size)
+    price = models.DecimalField(max_digits=5, decimal_places=2)
 
-class Pasta(models.Model):
+class Pastas(models.Model):
     name = models.CharField(max_length=64)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
 
-class Salad(models.Model):
+class Salads(models.Model):
     name = models.CharField(max_length=64)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
 
-class DinnerPlatters(models.Model):
+class Platters(models.Model):
     name = models.CharField(max_length=64)
-    size = models.CharField(max_length=64)
-    price = models.FloatField()
+    size = models.CharField(max_length=5,choices=size)
+    price = models.DecimalField(max_digits=5, decimal_places=2)
 
