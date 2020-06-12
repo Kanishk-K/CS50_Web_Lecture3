@@ -2,14 +2,22 @@ from django.db import models
 
 # Create your models here.
 size = (('Small', 'Small'), ("Large", "Large"))
+versionPizza = (('Regular','Regular'),('Sicilian', 'Sicilian'))
+PizzaType = (
+    ('Cheese','Cheese'),
+    ("1 Topping","1 Topping"),
+    ("2 Topping","2 Topping"),
+    ("3 Topping","3 Topping"),
+    ("Special", "Special")
+)
 class Pizzas(models.Model):
-    name = models.CharField(max_length=64)
+    version = models.CharField(max_length=64,choices=versionPizza)
     price = models.DecimalField(max_digits=5, decimal_places=2)
-    toppings = models.IntegerField()
+    pizzatype = models.CharField(max_length=64,choices=PizzaType)
     size = models.CharField(max_length=5,choices=size)
 
     def __str__(self):
-        return f"{self.name} Pizza is a {self.size} pizza with {self.toppings} toppings which costs {self.price}."
+        return f"{self.version} {self.size} {self.pizzatype} pizza."
 
 class PizzaToppings(models.Model):
     name = models.CharField(max_length=64)
@@ -18,6 +26,9 @@ class Subs(models.Model):
     name = models.CharField(max_length=64)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     size = models.CharField(max_length=5,choices=size)
+
+    def __str__(self):
+        return f"{self.size} {self.name} sub."
 
 class SubToppings(models.Model):
     name = models.CharField(max_length=64)

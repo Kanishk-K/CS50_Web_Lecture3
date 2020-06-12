@@ -4,5 +4,6 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("Menu",views.AjaxSqlRequest, name="AjaxSqlRequest")
+    path("Menu",views.AjaxSqlRequest, name="AjaxSqlRequest"),
+    path("Price",views.PriceRequest,name="PriceRequest")
 ]
