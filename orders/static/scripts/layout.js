@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         })
                     })
                 }
-                if (Selection == "Subs"){
+                if (Selection == "Subs" || Selection == "Platters"){
                     for(item in response){
                         if (response[item].SmallPrice != undefined){
                             var newTitle = document.createElement("h6");
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         }
                     }
                 }
-                if (Selection == "Pastas"){
+                if (Selection == "Pastas" || Selection == "Salads"){
                     for (item in response){
                         var newTitle = document.createElement("h6");
                         newTitle.className = "card-title text-white bg-dark";

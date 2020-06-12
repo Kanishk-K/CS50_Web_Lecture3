@@ -29,7 +29,7 @@ def AjaxSqlRequest(request):
         AllSelectionOptions.append(versions)
         AllSelectionOptions.append(PizzaTypes)
         AllSelectionOptions.append(sizes)
-    if request.POST.get("Selection") == "Subs":
+    if request.POST.get("Selection") == "Subs" or request.POST.get("Selection") == "Platters":
         AlreadyAdded = []
         for item in Selection.objects.all():
             if item.name not in AlreadyAdded:
@@ -39,7 +39,7 @@ def AjaxSqlRequest(request):
                 else:
                     AllSelectionOptions.append({"name":item.name,"price":item.price,"size":item.size})
                     AlreadyAdded.append(item.name)
-    if request.POST.get("Selection") == "Pastas":
+    if request.POST.get("Selection") == "Pastas" or request.POST.get("Selection") == "Salads":
         for item in Selection.objects.all():
             AllSelectionOptions.append({"name":item.name,"price":item.price})
     return HttpResponse(JsonResponse(AllSelectionOptions,safe=False))
