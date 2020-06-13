@@ -6,20 +6,29 @@ document.addEventListener('DOMContentLoaded', function(){
     const PlatterButton = document.querySelector(".Platter");
     const CSRFToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
     const ResponseField = document.querySelector(".Response");
+    const Username = document.querySelector(".Username")
+    const Added = document.querySelector(".Added")
 
     let buttons = document.querySelectorAll('.Selector');
+    let CartButton = document.querySelectorAll(".Price");
     const PizzaObjects = ["Pizza_Type","Topping_Type","Size"];
+    var CartItems = []
     buttons.forEach((btn) => {
         btn.addEventListener("click", (event) => {
             document.querySelectorAll(".Response .Card").forEach(div => div.remove());
+            Added.hidden = true;
+            Added.innerText = "";
             buttons.forEach((btn) => {
                 if (btn.className.indexOf("btn-dark") != -1){
                     btn.className = btn.className.replace("btn-dark", "btn-outline-dark");
                 }
             })
-            let Selection = event.target.innerHTML;
+            let Selection = event.target.innerText;
             let EventObject = event.target;
             EventObject.className = EventObject.className.replace("btn-outline-dark", "btn-dark");
+            if (Selection == ""){
+
+            }
             const request = new XMLHttpRequest();
             request.open('POST', '/Menu');
             request.onload = () => {
@@ -46,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function(){
                             Option.appendChild(TextNode);
                             Dropdown.appendChild(Option);
                         }
+                        Dropdown.id = PizzaObjects[item];
                         DropdownDiv.appendChild(Dropdown);
                         newForm.appendChild(DropdownDiv);
                         ResponseField.appendChild(newForm);
@@ -55,9 +65,17 @@ document.addEventListener('DOMContentLoaded', function(){
                     FilledText.hidden = true;
                     newForm.appendChild(FilledText);
                     var newButton = document.createElement('button');
-                    newButton.className = "btn btn-success ml-5 mr-5 mt-2 mb-2";
-                    newButton.innerText = "Confirm Order"
+                    newButton.className = "ConfirmButton btn btn-success ml-5 mr-5 mt-2 mb-2";
+                    newButton.innerText = "Add To Cart";
                     newButton.disabled = true;
+                    newButton.type = "button";
+                    newButton.onclick = () =>{
+                        var Data = {"type":"Pizza","Pizza_Type":document.querySelector(`#${PizzaObjects[0]}`).value,"Topping_Type":document.querySelector(`#${PizzaObjects[1]}`).value,"Size":document.querySelector(`#${PizzaObjects[2]}`).value};
+                        CartItems.push(Data);
+                        Added.innerText = `Successfully added ${Data["Size"]} ${Data["Pizza_Type"]} ${Data["Topping_Type"]} Pizza to cart.`;
+                        Added.hidden = false;
+                        console.log(CartItems);
+                    };
                     newForm.appendChild(newButton);
                     let Dropdowns = document.querySelectorAll(".Dropdown");
                     Dropdowns.forEach((Dropdown) => {
@@ -66,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function(){
                             for (var i = 0; i < PizzaObjects.length; i++){
                                 if (allSelected == true){
                                     if (document.querySelector(`.${PizzaObjects[i]}`).value == 'default'){
-                                        console.log("Not all selected.")
                                         allSelected = false;
                                     }
                                 }
@@ -87,6 +104,10 @@ document.addEventListener('DOMContentLoaded', function(){
                                         console.log(PricingResponse.Price);
                                         FilledText.innerHTML = `Your order will cost: $${PricingResponse.Price}`;
                                         FilledText.hidden=false;
+                                        
+                                        if (Username != null){
+                                            newButton.disabled = false;
+                                        }
                                     }
                                 }
                                 const PriceRequest = new FormData();
@@ -106,10 +127,20 @@ document.addEventListener('DOMContentLoaded', function(){
                             newTitle.className = "card-title text-white bg-dark";
                             newTitle.innerHTML = `${response[item].name}`;
                             var newSmallButton = document.createElement("a");
-                            newSmallButton.className = "btn btn-outline-success bg-white m-2";
+                            if (Username != null){
+                                newSmallButton.className = "Price btn btn-success m-2";
+                            }
+                            else{
+                                newSmallButton.className = "Price btn btn-success m-2 disabled";
+                            }
                             newSmallButton.innerHTML = `$${response[item].SmallPrice}`;
                             var newLargeButton = document.createElement("a");
-                            newLargeButton.className = "btn btn-outline-danger bg-white m-2";
+                            if (Username != null){
+                                newLargeButton.className = "Price btn btn-danger m-2";
+                            }
+                            else{
+                                newLargeButton.className = "Price btn btn-danger m-2 disabled";
+                            }
                             newLargeButton.innerHTML = `$${response[item].LargePrice}`;
                             var newCardBody = document.createElement("div");
                             newCardBody.className = "card-body";
@@ -117,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function(){
                             newCardBody.appendChild(newSmallButton);
                             newCardBody.appendChild(newLargeButton);
                             var newCard = document.createElement("div");
-                            newCard.className = "ItemCard card bg-dark";
+                            newCard.className = "ItemCard card bg-dark m-2";
                             newCard.appendChild(newCardBody);
                             var newColumn = document.createElement("div");
                             newColumn.className = "Card col-sm-3";
@@ -130,10 +161,20 @@ document.addEventListener('DOMContentLoaded', function(){
                             newTitle.innerHTML = `${response[item].name}`;
                             var newButton = document.createElement("a");
                             if (response[item].size == "Small"){
-                                newButton.className = "btn btn-outline-success bg-white m-2";
+                                if (Username != null){
+                                    newButton.className = "Price btn btn-success m-2";
+                                }
+                                else{
+                                    newButton.className = "Price btn btn-success m-2 disabled";
+                                }
                             }
                             else {
-                                newButton.className = "btn btn-outline-danger bg-white m-2";
+                                if (Username != null){
+                                    newButton.className = "Price btn btn-danger m-2";
+                                }
+                                else{
+                                    newButton.className = "Price btn btn-danger m-2 disabled";
+                                }
                             }
                             newButton.innerHTML = `$${response[item].price}`
                             var newCardBody = document.createElement("div");
@@ -141,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function(){
                             newCardBody.appendChild(newTitle);
                             newCardBody.appendChild(newButton);
                             var newCard = document.createElement("div");
-                            newCard.className = "ItemCard card bg-dark";
+                            newCard.className = "ItemCard card bg-dark m-2";
                             newCard.appendChild(newCardBody);
                             var newColumn = document.createElement("div");
                             newColumn.className = "Card col-sm-3";
@@ -156,7 +197,12 @@ document.addEventListener('DOMContentLoaded', function(){
                         newTitle.className = "card-title text-white bg-dark";
                         newTitle.innerHTML = `${response[item].name}`;
                         var newButton = document.createElement("a");
-                        newButton.className = "btn btn-outline-success bg-white m-2";
+                        if (Username != null){
+                            newButton.className = "Price btn btn-success m-2";
+                        }
+                        else {
+                            newButton.className = "Price btn btn-success m-2 disabled";
+                        }
                         newButton.innerHTML = `$${response[item].price}`
                         var newCardBody = document.createElement("div");
                         newCardBody.className = "card-body";
@@ -173,9 +219,11 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             }
             const AjaxSqlRequest = new FormData();
-            AjaxSqlRequest.append("Selection",Selection);
-            AjaxSqlRequest.append("csrfmiddlewaretoken",CSRFToken)
-            request.send(AjaxSqlRequest);
+            if (Selection != ""){
+                AjaxSqlRequest.append("Selection",Selection);
+                AjaxSqlRequest.append("csrfmiddlewaretoken",CSRFToken)
+                request.send(AjaxSqlRequest);
+            }
         });
     });
 })

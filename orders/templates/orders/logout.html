@@ -1,0 +1,25 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{% static 'styles/layout.css' %}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'scripts/layout.js' %}"></script>
+        <script src="https://unpkg.com/@popperjs/core@2"></script>
+        <title>Login</title>
+    </head>
+    <body>
+        <div class = "container-fluid bg-danger">
+            <div class ="row">
+                <div class = "col align-self-start pl-5">
+                    <a href="{% url 'index' %}"><img src="{% static 'styles/Logo.png' %}"></a>
+                </div>
+                <div class = "col pr-5 pb-4 align-self-end text-right">
+                    <small class="text-white">You have been logged out.<a class="text-light ml-2" href="/Login">Log Back In?</a>.</small>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

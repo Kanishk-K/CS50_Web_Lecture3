@@ -13,10 +13,16 @@
         <div class = "container-fluid bg-danger">
             <div class ="row">
                 <div class = "col align-self-start pl-5">
-                    <img src="{% static 'styles/Logo.png' %}">
+                    <a href="{% url 'index' %}"><img src="{% static 'styles/Logo.png' %}"></a>
                 </div>
-                <div class = "col pr-5 pb-4 align-self-end text-right">
-                    <a class="text">Login/Logout/Cart Stuff<a>
+                <div class = "col m-3 align-self-end text-right">
+                    {% if logged %}
+                        <p><a class="Username text-white">Username: {{user}}<a></p>
+                        <p><button class="btn btn-danger Selector Cart m-2"><img class = "h-25"src="{% static 'styles/shopping-cart.png' %}"></button><a class="text-white" href="{% url 'logout' %}">Logout</a></p>
+                    {% else %}
+                        <a class="text-white" href="/Register">Register</a>
+                        <a class="text-white" href="/Login">Login</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -33,6 +39,11 @@
         </div>
         <div class = "container">
             <div class = "Response row justify-content-center text-center">
+            </div>
+        </div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="Added alert alert-success" hidden></div>
             </div>
         </div>
     </body>

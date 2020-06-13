@@ -1,0 +1,36 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{% static 'styles/layout.css' %}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'scripts/layout.js' %}"></script>
+        <script src="https://unpkg.com/@popperjs/core@2"></script>
+        <title>Register</title>
+    </head>
+    <body>
+        <div class = "container-fluid bg-danger">
+            <div class ="row">
+                <div class = "col align-self-start pl-5">
+                    <img src="{% static 'styles/Logo.png' %}">
+                </div>
+                <div class = "col pr-5 pb-4 align-self-end text-right">
+                    <small class="text-white">Do you already have an account? <a class="text-light ml-2" href="/Login">Log In</a>.</small>
+                </div>
+            </div>
+        </div>
+        <div class="content-section row justify-content-center">
+            <form method="POST">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    {{ form|crispy }}
+                </fieldset>
+                <div class="form-group">
+                    <button class="btn btn-success" type="submit">Register</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
