@@ -128,18 +128,18 @@ document.addEventListener('DOMContentLoaded', function(){
                             newTitle.innerHTML = `${response[item].name}`;
                             var newSmallButton = document.createElement("a");
                             if (Username != null){
-                                newSmallButton.className = "Price btn btn-success m-2";
+                                newSmallButton.className = `Sub${item} Price btn btn-success m-2`;
                             }
                             else{
-                                newSmallButton.className = "Price btn btn-success m-2 disabled";
+                                newSmallButton.className = `Sub${item} Price btn btn-success m-2 disabled`;
                             }
                             newSmallButton.innerHTML = `$${response[item].SmallPrice}`;
                             var newLargeButton = document.createElement("a");
                             if (Username != null){
-                                newLargeButton.className = "Price btn btn-danger m-2";
+                                newLargeButton.className = `Sub${item} Price btn btn-danger m-2`;
                             }
                             else{
-                                newLargeButton.className = "Price btn btn-danger m-2 disabled";
+                                newLargeButton.className = `Sub${item} Price btn btn-danger m-2 disabled`;
                             }
                             newLargeButton.innerHTML = `$${response[item].LargePrice}`;
                             var newCardBody = document.createElement("div");
@@ -162,18 +162,18 @@ document.addEventListener('DOMContentLoaded', function(){
                             var newButton = document.createElement("a");
                             if (response[item].size == "Small"){
                                 if (Username != null){
-                                    newButton.className = "Price btn btn-success m-2";
+                                    newButton.className = `${item} Price btn btn-success m-2`;
                                 }
                                 else{
-                                    newButton.className = "Price btn btn-success m-2 disabled";
+                                    newButton.className = `${item} Price btn btn-success m-2 disabled`;
                                 }
                             }
                             else {
                                 if (Username != null){
-                                    newButton.className = "Price btn btn-danger m-2";
+                                    newButton.className = `${item} Price btn btn-danger m-2`;
                                 }
                                 else{
-                                    newButton.className = "Price btn btn-danger m-2 disabled";
+                                    newButton.className = `${item} Price btn btn-danger m-2 disabled`;
                                 }
                             }
                             newButton.innerHTML = `$${response[item].price}`
@@ -190,6 +190,21 @@ document.addEventListener('DOMContentLoaded', function(){
                             ResponseField.append(newColumn);
                         }
                     }
+                document.querySelectorAll(".Price").forEach((PriceButton) => {
+                    PriceButton.addEventListener("click",(event) => {
+                        if (PriceButton.className.includes("btn-success")){
+                            var size = "Small"
+                        }
+                        else {
+                            var size = "Large"
+                        }
+                        var Data = {"type":Selection,"name":PriceButton.parentElement.querySelector("h6").innerText,"price":PriceButton.innerText,"Size":size};
+                        CartItems.push(Data);
+                        Added.innerText = `Successfully added ${Data["Size"]} ${Data["name"]} to cart.`;
+                        Added.hidden = false;
+                        console.log(CartItems);
+                    })
+                })
                 }
                 if (Selection == "Pastas" || Selection == "Salads"){
                     for (item in response){
@@ -198,10 +213,10 @@ document.addEventListener('DOMContentLoaded', function(){
                         newTitle.innerHTML = `${response[item].name}`;
                         var newButton = document.createElement("a");
                         if (Username != null){
-                            newButton.className = "Price btn btn-success m-2";
+                            newButton.className = "Pricing btn btn-success m-2";
                         }
                         else {
-                            newButton.className = "Price btn btn-success m-2 disabled";
+                            newButton.className = "Pricing btn btn-success m-2 disabled";
                         }
                         newButton.innerHTML = `$${response[item].price}`
                         var newCardBody = document.createElement("div");
@@ -217,6 +232,15 @@ document.addEventListener('DOMContentLoaded', function(){
                         ResponseField.append(newColumn);
                     }
                 }
+                document.querySelectorAll(".Pricing").forEach((PriceButton) => {
+                    PriceButton.addEventListener("click",(event) => {
+                        var Data = {"type":Selection,"name":PriceButton.parentElement.querySelector("h6").innerText,"price":PriceButton.innerText};
+                        CartItems.push(Data);
+                        Added.innerText = `Successfully added ${Data["Size"]} ${Data["name"]} to cart.`;
+                        Added.hidden = false;
+                        console.log(CartItems);
+                    })
+                })
             }
             const AjaxSqlRequest = new FormData();
             if (Selection != ""){
