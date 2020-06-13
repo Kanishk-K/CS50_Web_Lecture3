@@ -73,6 +73,7 @@ def Register(request):
     else:
         form = UserRegisterForm()
     return render(request,'orders/register.html',{'form':form})
-
-def Login(request):
+@require_http_methods(["POST"])
+def Order(request):
     return
+

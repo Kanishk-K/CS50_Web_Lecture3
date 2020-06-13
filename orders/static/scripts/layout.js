@@ -12,12 +12,23 @@ document.addEventListener('DOMContentLoaded', function(){
     let buttons = document.querySelectorAll('.Selector');
     let CartButton = document.querySelectorAll(".Price");
     const PizzaObjects = ["Pizza_Type","Topping_Type","Size"];
-    var CartItems = []
+    var total = 0;
+    if (localStorage.getItem("CartItems") === null){
+        var CartItems = [];
+    }
+    else {
+        var CartItems = JSON.parse(localStorage.getItem("CartItems"));
+        for (item in CartItems){
+            CartItems[item]["id"] = item.toString();
+        }
+        console.log(CartItems)
+    }
     buttons.forEach((btn) => {
         btn.addEventListener("click", (event) => {
             document.querySelectorAll(".Response .Card").forEach(div => div.remove());
             Added.hidden = true;
             Added.innerText = "";
+            total = 0;
             buttons.forEach((btn) => {
                 if (btn.className.indexOf("btn-dark") != -1){
                     btn.className = btn.className.replace("btn-dark", "btn-outline-dark");
@@ -27,7 +38,67 @@ document.addEventListener('DOMContentLoaded', function(){
             let EventObject = event.target;
             EventObject.className = EventObject.className.replace("btn-outline-dark", "btn-dark");
             if (Selection == ""){
-
+                var newColumn = document.createElement("div");
+                newColumn.className = "Card col-sm-8";
+                var ConfirmButton = document.createElement("button");
+                ConfirmButton.className = "btn btn-success m-2";
+                ResponseField.appendChild(newColumn);
+                for (item in CartItems){
+                    total = total + parseFloat(CartItems[item]["price"]);
+                    var newList = document.createElement("div");
+                    newList.className = "row";
+                    newList.id = `Item#${item}`;
+                    newColumn.appendChild(newList);
+                    var NameCol = document.createElement("div");
+                    NameCol.className = "col-8";
+                    var PriceCol = document.createElement("div");
+                    PriceCol.className = "col";
+                    var CancelCol = document.createElement("div");
+                    CancelCol.className = "col justify-content-start"
+                    var ItemName = document.createElement("h6");
+                    var ItemPrice = document.createElement("h6");
+                    var CancelButton = document.createElement("input");
+                    CancelButton.type = "image";
+                    CancelButton.src = "/static/styles/close.png";
+                    CancelButton.className = "CancelButton align-self-start"
+                    CancelButton.onclick = (event) => {
+                        console.log(event.target.parentElement.parentElement.id)
+                        for (item in CartItems){
+                            if(CartItems[item]["id"] == event.target.parentElement.parentElement.id.replace("Item#","")){
+                                total = total - CartItems[item]["price"]
+                                ConfirmButton.innerText = `Confirm Order Total: $${Math.abs(total).toFixed(2)}`;
+                                CartItems.splice(item,1);
+                                if (CartItems.length == 0){
+                                    ConfirmButton.disabled = true;
+                                    ConfirmButton.className="btn btn-danger m-2";
+                                }
+                                localStorage.setItem("CartItems",JSON.stringify(CartItems));
+                                console.log(CartItems);
+                            }
+                        }
+                        event.target.parentElement.parentElement.parentElement.removeChild(event.target.parentElement.parentElement);
+                    }
+                    ItemName.className = "Name align-self-start text-left";
+                    ItemPrice.className = "align-self-end text-right";
+                    NameCol.appendChild(ItemName);
+                    PriceCol.appendChild(ItemPrice);
+                    CancelCol.appendChild(CancelButton);
+                    ItemPrice.innerHTML = `$${CartItems[item]["price"]}`;
+                    if(CartItems[item]["type"] == "Pizzas"){
+                        ItemName.innerText = `${CartItems[item]["Size"]} ${CartItems[item]["Pizza_Type"]} ${CartItems[item]["Topping_Type"]} ${CartItems[item]["type"].slice(0,-1)}`;
+                    }
+                    if(CartItems[item]["type"] == "Subs" || CartItems[item]["type"] == "Platters"){
+                        ItemName.innerText = `${CartItems[item]["Size"]} ${CartItems[item]["name"]} ${CartItems[item]["type"].slice(0,-1)}`;
+                    }
+                    if(CartItems[item]["type"] == "Pastas" || CartItems[item]["type"] == "Salads"){
+                        ItemName.innerText = `${CartItems[item]["name"]} ${CartItems[item]["type"].slice(0,-1)}`
+                    }
+                    newList.appendChild(NameCol);
+                    newList.appendChild(PriceCol);
+                    newList.appendChild(CancelCol);
+                    newColumn.appendChild(ConfirmButton);
+                }
+                ConfirmButton.innerText = `Confirm Order Total: $${Math.abs(total).toFixed(2)}`
             }
             const request = new XMLHttpRequest();
             request.open('POST', '/Menu');
@@ -69,13 +140,6 @@ document.addEventListener('DOMContentLoaded', function(){
                     newButton.innerText = "Add To Cart";
                     newButton.disabled = true;
                     newButton.type = "button";
-                    newButton.onclick = () =>{
-                        var Data = {"type":"Pizza","Pizza_Type":document.querySelector(`#${PizzaObjects[0]}`).value,"Topping_Type":document.querySelector(`#${PizzaObjects[1]}`).value,"Size":document.querySelector(`#${PizzaObjects[2]}`).value};
-                        CartItems.push(Data);
-                        Added.innerText = `Successfully added ${Data["Size"]} ${Data["Pizza_Type"]} ${Data["Topping_Type"]} Pizza to cart.`;
-                        Added.hidden = false;
-                        console.log(CartItems);
-                    };
                     newForm.appendChild(newButton);
                     let Dropdowns = document.querySelectorAll(".Dropdown");
                     Dropdowns.forEach((Dropdown) => {
@@ -94,20 +158,25 @@ document.addEventListener('DOMContentLoaded', function(){
                                 pricing.open('POST', '/Price');
                                 pricing.onload = () => {
                                     const PricingResponse = JSON.parse(pricing.responseText)
-                                    console.log(PricingResponse)
                                     if (PricingResponse.Error != undefined){
                                         console.log(PricingResponse.Error);
                                         FilledText.hidden=false;
                                         FilledText.innerHTML = PricingResponse.Error;
                                     }
                                     else{
-                                        console.log(PricingResponse.Price);
                                         FilledText.innerHTML = `Your order will cost: $${PricingResponse.Price}`;
                                         FilledText.hidden=false;
                                         
                                         if (Username != null){
                                             newButton.disabled = false;
                                         }
+                                        newButton.onclick = () =>{
+                                            var Data = {"id": CartItems.length.toString(), "type":Selection,"Pizza_Type":document.querySelector(`#${PizzaObjects[0]}`).value,"Topping_Type":document.querySelector(`#${PizzaObjects[1]}`).value,"Size":document.querySelector(`#${PizzaObjects[2]}`).value,"price":PricingResponse.Price};
+                                            CartItems.push(Data);
+                                            Added.innerText = `Successfully added ${Data["Size"]} ${Data["Pizza_Type"]} ${Data["Topping_Type"]} Pizza to cart.`;
+                                            Added.hidden = false;
+                                            localStorage.setItem("CartItems",JSON.stringify(CartItems));
+                                        };
                                     }
                                 }
                                 const PriceRequest = new FormData();
@@ -198,11 +267,11 @@ document.addEventListener('DOMContentLoaded', function(){
                         else {
                             var size = "Large"
                         }
-                        var Data = {"type":Selection,"name":PriceButton.parentElement.querySelector("h6").innerText,"price":PriceButton.innerText,"Size":size};
+                        var Data = {"id": CartItems.length.toString(), "type":Selection,"name":PriceButton.parentElement.querySelector("h6").innerText,"price":PriceButton.innerText.replace("$",""),"Size":size};
                         CartItems.push(Data);
                         Added.innerText = `Successfully added ${Data["Size"]} ${Data["name"]} to cart.`;
                         Added.hidden = false;
-                        console.log(CartItems);
+                        localStorage.setItem("CartItems",JSON.stringify(CartItems));
                     })
                 })
                 }
@@ -234,11 +303,11 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
                 document.querySelectorAll(".Pricing").forEach((PriceButton) => {
                     PriceButton.addEventListener("click",(event) => {
-                        var Data = {"type":Selection,"name":PriceButton.parentElement.querySelector("h6").innerText,"price":PriceButton.innerText};
+                        var Data = {"id": CartItems.length.toString(), "type":Selection,"name":PriceButton.parentElement.querySelector("h6").innerText,"price":PriceButton.innerText.replace("$","")};
                         CartItems.push(Data);
-                        Added.innerText = `Successfully added ${Data["Size"]} ${Data["name"]} to cart.`;
+                        Added.innerText = `Successfully added ${Data["name"]} to cart.`;
                         Added.hidden = false;
-                        console.log(CartItems);
+                        localStorage.setItem("CartItems",JSON.stringify(CartItems));
                     })
                 })
             }

@@ -26,18 +26,20 @@ class Pizzas(models.Model):
     def __str__(self):
         return f"{self.version} {self.size} {self.pizzatype} pizza."
 
-class Subs(models.Model):
-    name = models.CharField(max_length=64)
-    price = models.DecimalField(max_digits=5, decimal_places=2)
-    size = models.CharField(max_length=5,choices=size)
-
-    def __str__(self):
-        return f"{self.size} {self.name} sub."
-
 class SubToppings(models.Model):
     name = models.CharField(max_length=64)
     size = models.CharField(max_length=5,choices=size)
     price = models.DecimalField(max_digits=5, decimal_places=2)
+
+class Subs(models.Model):
+    name = models.CharField(max_length=64)
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    size = models.CharField(max_length=5,choices=size)
+    toppings = models.ManyToManyField(SubToppings, blank=True)
+
+    def __str__(self):
+        return f"{self.size} {self.name} sub."
+
 
 class Pastas(models.Model):
     name = models.CharField(max_length=64)
