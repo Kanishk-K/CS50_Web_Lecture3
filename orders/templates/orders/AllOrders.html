@@ -1,0 +1,50 @@
+{% load static %}
+{% csrf_token %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{% static 'styles/layout.css' %}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'scripts/AllOrders.js' %}"></script>
+        <script src="https://unpkg.com/@popperjs/core@2"></script>
+        <title>View All Orders</title>
+    </head>
+    <body>
+        <div class = "container-fluid bg-danger">
+            <div class ="row">
+                <div class = "col align-self-start pl-5">
+                    <a href="{% url 'index' %}"><img src="{% static 'styles/Logo.png' %}"></a>
+                </div>
+                <div class = "col align-self-end pl-5 text-right m-3">
+                    <p><a class="Username text-white">Username: {{user}}<a></p>
+                    <p><a class="btn btn-danger Selector Cart m-2" href="{% url 'index' %}"><img class = "h-25"src="{% static 'styles/shopping-cart.png' %}"></button><a class="btn btn-danger" href="{% url 'Orders' %}">Orders</a><a class="btn btn-danger text-white" href="{% url 'logout' %}">Logout</a></p>
+                </div>
+            </div>
+        </div>
+        <div class= "container">
+            <div class = "row justify-content-center">
+                {% for order in orders %}
+                <div class = "p-2 m-3 col-4 justify-content-center bg-dark rounded">
+                    <h6 class="Id text-white">Order#{{order.id}}</h6>
+                    <h6 class="text-white">Username: {{order.user_id}}</h6>
+                    {% if order.status == "Preparing" %}
+                    <h6 class="Status text-danger">Preparing</h6>
+                    <button class="Ready btn btn-warning">Ready</button>
+                    <button class="Completed btn btn-success">Completed</button>
+                    {% elif order.status == "Ready" %}
+                    <h6 class="Status text-warning">Ready</h6>
+                    <button class="Completed btn btn-success">Completed</button>
+                    {% else %}
+                    <h6 class="text-success">Completed</h6>
+                    {% endif %}
+                    <p class="text-white">{{ order.description|linebreaksbr}}</p>
+                    <h6 class="btn btn-success">${{ order.total }}</h6>
+                </div>
+                {% empty %}
+                <div class="alert alert-danger m-3 rounded">{{user}} There seems to be no orders currently active.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+</html>

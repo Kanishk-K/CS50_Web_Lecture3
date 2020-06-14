@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .forms import UserRegisterForm
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 
@@ -93,7 +94,23 @@ def Toppings(request):
         for Toppings in PizzaToppingsObject:
             ToppingList.append(Toppings.name)
         return JsonResponse({"Toppings":ToppingList})
-@require_http_methods(["POST"])
-def Order(request):
-    return
-
+def Orders(request):
+    if request.method == "POST":
+        description = request.POST.get("items").replace(",","\n")
+        f = Order(user_id=request.POST.get("user"),total=request.POST.get("total"),description=description)
+        f.save()
+        return HttpResponse("Placeholder")
+    else:
+        OrderList = Order.objects.filter(user_id=request.user.username)
+        return render(request, "orders/UserOrders.html",{"user":request.user.username,"orders":OrderList})
+@staff_member_required
+def AllOrders(request):
+    if request.method == "POST":
+        SelectedOrder = Order.objects.filter(id=request.POST.get("id")).first()
+        SelectedOrder.status = request.POST.get("action")
+        SelectedOrder.save()
+        print(SelectedOrder.status)
+        return HttpResponse("Placeholder")
+    else:
+        ActiveOrders = Order.objects.all().exclude(status="Completed")
+        return render(request,'orders/AllOrders.html',{"user":request.user.username,"orders":ActiveOrders})

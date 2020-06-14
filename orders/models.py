@@ -62,3 +62,18 @@ class Platters(models.Model):
     def __str__(self):
         return f"{self.size} {self.name} platter."
 
+class Order(models.Model):
+    STATUSES = (
+		('Preparing', "Preparing"),
+		('Ready', "Ready"),
+		('Completed', "Completed")
+	)
+    user_id = models.CharField(max_length=255)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    status = models.CharField(max_length=30, choices=STATUSES, default="Preparing")
+
+    def __str__(self):
+        return f"{self.user_id} paid ${self.total} for {self.description}. {self.status}."
+
+

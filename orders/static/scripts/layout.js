@@ -23,6 +23,10 @@ document.addEventListener('DOMContentLoaded', function(){
         }
         console.log(CartItems)
     }
+    if (localStorage.getItem("OrderPlaced") !== null){
+        Added.hidden = false;
+        Added.innerText = "Order Successfully Placed";
+    }
     buttons.forEach((btn) => {
         btn.addEventListener("click", (event) => {
             document.querySelectorAll(".Response .Card").forEach(div => div.remove());
@@ -120,6 +124,25 @@ document.addEventListener('DOMContentLoaded', function(){
                     newColumn.appendChild(ConfirmButton);
                 }
                 ConfirmButton.innerText = `Confirm Order Total: $${Math.abs(total).toFixed(2)}`
+                ConfirmButton.onclick = () => {
+                    const request = new XMLHttpRequest();
+                    request.open('POST', 'Orders');
+                    request.onload = () => {
+                        localStorage.clear()
+                        localStorage.setItem("OrderPlaced",true);
+                        location.reload()
+                    }
+                    const OrderRequest = new FormData();
+                    OrderItems = []
+                    OrderRequest.append("user",document.querySelector(".Username").innerText.replace("Username: ",""));
+                    OrderRequest.append("total",Math.abs(total).toFixed(2))
+                    document.querySelectorAll(".col-8").forEach((div) => {
+                        OrderItems.push(div.querySelector("h6").innerText)
+                    })
+                    OrderRequest.append("items",OrderItems)
+                    OrderRequest.append("csrfmiddlewaretoken",CSRFToken)
+                    request.send(OrderRequest);
+                }
             }
             const request = new XMLHttpRequest();
             request.open('POST', '/Menu');
@@ -140,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function(){
                         Label.innerText = `Select a ${PizzaObjects[item].replace("_"," ")}`;
                         Label.value = "default";
                         Dropdown.appendChild(Label);
-                        console.log(response[item])
                         for (attribute in response[item]){
                             var Option = document.createElement('option');
                             Option.value = response[item][attribute];

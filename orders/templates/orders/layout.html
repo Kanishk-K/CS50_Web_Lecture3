@@ -18,7 +18,7 @@
                 <div class = "col m-3 align-self-end text-right">
                     {% if logged %}
                         <p><a class="Username text-white">Username: {{user}}<a></p>
-                        <p><button class="btn btn-danger Selector Cart m-2"><img class = "h-25"src="{% static 'styles/shopping-cart.png' %}"></button><a class="text-white" href="{% url 'logout' %}">Logout</a></p>
+                        <p><button class="btn btn-danger Selector Cart m-2"><img class = "h-25"src="{% static 'styles/shopping-cart.png' %}"></button><a class="btn btn-danger" href="{% url 'Orders' %}">Orders</a><a class="btn btn-danger text-white" href="{% url 'logout' %}">Logout</a></p>
                     {% else %}
                         <a class="text-white" href="/Register">Register</a>
                         <a class="text-white" href="/Login">Login</a>
