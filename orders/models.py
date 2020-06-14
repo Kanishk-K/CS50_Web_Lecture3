@@ -28,7 +28,6 @@ class Pizzas(models.Model):
 
 class SubToppings(models.Model):
     name = models.CharField(max_length=64)
-    size = models.CharField(max_length=5,choices=size)
     price = models.DecimalField(max_digits=5, decimal_places=2)
 
 class Subs(models.Model):

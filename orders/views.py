@@ -46,13 +46,17 @@ def AjaxSqlRequest(request):
         AllSelectionOptions.append(ToppingList)
     if request.POST.get("Selection") == "Subs" or request.POST.get("Selection") == "Platters":
         AlreadyAdded = []
+        ToppingList = []
+        SubToppingsObject = SubToppings.objects.all()
+        for Toppings in SubToppingsObject:
+            ToppingList.append(Toppings.name)
         for item in Selection.objects.all():
             if item.name not in AlreadyAdded:
                 if Selection.objects.filter(name=item.name).count() == 2:
-                    AllSelectionOptions.append({"name":item.name,"SmallPrice":Selection.objects.filter(name=item.name,size="Small").first().price,"LargePrice":Selection.objects.filter(name=item.name,size="Large").first().price})
+                    AllSelectionOptions.append({"name":item.name,"SmallPrice":Selection.objects.filter(name=item.name,size="Small").first().price,"LargePrice":Selection.objects.filter(name=item.name,size="Large").first().price,"Toppings":ToppingList})
                     AlreadyAdded.append(item.name)
                 else:
-                    AllSelectionOptions.append({"name":item.name,"price":item.price,"size":item.size})
+                    AllSelectionOptions.append({"name":item.name,"price":item.price,"size":item.size,"Toppings":ToppingList})
                     AlreadyAdded.append(item.name)
     if request.POST.get("Selection") == "Pastas" or request.POST.get("Selection") == "Salads":
         for item in Selection.objects.all():

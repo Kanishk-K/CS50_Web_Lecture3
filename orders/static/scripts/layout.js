@@ -101,7 +101,18 @@ document.addEventListener('DOMContentLoaded', function(){
                         }
                     }
                     if(CartItems[item]["type"] == "Subs" || CartItems[item]["type"] == "Platters"){
-                        ItemName.innerText = `${CartItems[item]["Size"]} ${CartItems[item]["name"]} ${CartItems[item]["type"].slice(0,-1)}`;
+                        if (CartItems[item]["type"] == "Platters"){
+                            ItemName.innerText = `${CartItems[item]["Size"]} ${CartItems[item]["name"]} ${CartItems[item]["type"].slice(0,-1)}`;
+                        }
+                        else {
+                            console.log(CartItems[item]['Toppings'])
+                            if (CartItems[item]['Toppings'] != "default"){
+                                ItemName.innerText = `${CartItems[item]["Size"]} ${CartItems[item]["name"]} ${CartItems[item]["type"].slice(0,-1)} ${CartItems[item]["Toppings"]}`
+                            }
+                            else{
+                                ItemName.innerText = `${CartItems[item]["Size"]} ${CartItems[item]["name"]} ${CartItems[item]["type"].slice(0,-1)}`
+                            }
+                        }
                     }
                     if(CartItems[item]["type"] == "Pastas" || CartItems[item]["type"] == "Salads"){
                         ItemName.innerText = `${CartItems[item]["name"]} ${CartItems[item]["type"].slice(0,-1)}`
@@ -244,6 +255,25 @@ document.addEventListener('DOMContentLoaded', function(){
                             newCardBody.appendChild(newTitle);
                             newCardBody.appendChild(newSmallButton);
                             newCardBody.appendChild(newLargeButton);
+                            if (Selection == "Subs"){
+                                var Dropdown = document.createElement('select');
+                                Dropdown.className = `Sub${item} Dropdown form-control`;
+                                var Label = document.createElement('option')
+                                Label.disabled = true;
+                                Label.selected = true;
+                                Label.hidden = true;
+                                Label.innerText = `Add a Topping?`;
+                                Label.value = "default";
+                                Dropdown.appendChild(Label);
+                                for (Topping in response[item]["Toppings"]){
+                                    var Option = document.createElement('option');
+                                    Option.value = response[item]["Toppings"][Topping];
+                                    var TextNode = document.createTextNode(response[item]["Toppings"][Topping]);
+                                    Option.appendChild(TextNode);
+                                    Dropdown.appendChild(Option);
+                                }
+                                newCardBody.appendChild(Dropdown)
+                            }
                             var newCard = document.createElement("div");
                             newCard.className = "ItemCard card bg-dark m-2";
                             newCard.appendChild(newCardBody);
@@ -278,6 +308,25 @@ document.addEventListener('DOMContentLoaded', function(){
                             newCardBody.className = "card-body";
                             newCardBody.appendChild(newTitle);
                             newCardBody.appendChild(newButton);
+                            if (Selection == "Subs"){
+                                var Dropdown = document.createElement('select');
+                                Dropdown.className = `Sub${item} Dropdown form-control`;
+                                var Label = document.createElement('option')
+                                Label.disabled = true;
+                                Label.selected = true;
+                                Label.hidden = true;
+                                Label.innerText = `Add a Topping?`;
+                                Label.value = "default";
+                                Dropdown.appendChild(Label);
+                                for (Topping in response[item]["Toppings"]){
+                                    var Option = document.createElement('option');
+                                    Option.value = response[item]["Toppings"][Topping];
+                                    var TextNode = document.createTextNode(response[item]["Toppings"][Topping]);
+                                    Option.appendChild(TextNode);
+                                    Dropdown.appendChild(Option);
+                                }
+                                newCardBody.appendChild(Dropdown)
+                            }
                             var newCard = document.createElement("div");
                             newCard.className = "ItemCard card bg-dark m-2";
                             newCard.appendChild(newCardBody);
@@ -295,7 +344,17 @@ document.addEventListener('DOMContentLoaded', function(){
                         else {
                             var size = "Large"
                         }
-                        var Data = {"id": CartItems.length.toString(), "type":Selection,"name":PriceButton.parentElement.querySelector("h6").innerText,"price":PriceButton.innerText.replace("$",""),"Size":size};
+                        if (Selection != "Subs"){
+                            var Data = {"id": CartItems.length.toString(), "type":Selection,"name":PriceButton.parentElement.querySelector("h6").innerText,"price":PriceButton.innerText.replace("$",""),"Size":size};
+                        }
+                        else{
+                            console.log(PriceButton.parentElement.querySelector(".Dropdown").value)
+                            var price = parseFloat(PriceButton.innerText.replace("$",""));
+                            if (PriceButton.parentElement.querySelector(".Dropdown").value != "default"){
+                                price += .5;
+                            }
+                            var Data = {"id": CartItems.length.toString(), "type":Selection,"name":PriceButton.parentElement.querySelector("h6").innerText,"price":price.toFixed(2),"Size":size,"Toppings":PriceButton.parentElement.querySelector(".Dropdown").value};
+                        }
                         CartItems.push(Data);
                         Added.innerText = `Successfully added ${Data["Size"]} ${Data["name"]} to cart.`;
                         Added.hidden = false;
