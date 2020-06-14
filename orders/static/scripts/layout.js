@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     let buttons = document.querySelectorAll('.Selector');
     let CartButton = document.querySelectorAll(".Price");
-    const PizzaObjects = ["Pizza_Type","Topping_Type","Size"];
+    const PizzaObjects = ["Pizza_Type","Topping_Type","Size","Topping_1","Topping_2","Topping_3"];
     var total = 0;
     if (localStorage.getItem("CartItems") === null){
         var CartItems = [];
@@ -37,9 +37,12 @@ document.addEventListener('DOMContentLoaded', function(){
             let Selection = event.target.innerText;
             let EventObject = event.target;
             EventObject.className = EventObject.className.replace("btn-outline-dark", "btn-dark");
+            for (item in CartItems){
+                CartItems[item]["id"] = item.toString();
+            }
             if (Selection == ""){
                 var newColumn = document.createElement("div");
-                newColumn.className = "Card col-sm-8";
+                newColumn.className = "Card col-sm-12";
                 var ConfirmButton = document.createElement("button");
                 ConfirmButton.className = "btn btn-success m-2";
                 ResponseField.appendChild(newColumn);
@@ -47,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     total = total + parseFloat(CartItems[item]["price"]);
                     var newList = document.createElement("div");
                     newList.className = "row";
-                    newList.id = `Item#${item}`;
+                    newList.id = `Item${item}`;
                     newColumn.appendChild(newList);
                     var NameCol = document.createElement("div");
                     NameCol.className = "col-8";
@@ -55,6 +58,9 @@ document.addEventListener('DOMContentLoaded', function(){
                     PriceCol.className = "col";
                     var CancelCol = document.createElement("div");
                     CancelCol.className = "col justify-content-start"
+                    newList.appendChild(NameCol);
+                    newList.appendChild(PriceCol);
+                    newList.appendChild(CancelCol);
                     var ItemName = document.createElement("h6");
                     var ItemPrice = document.createElement("h6");
                     var CancelButton = document.createElement("input");
@@ -64,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     CancelButton.onclick = (event) => {
                         console.log(event.target.parentElement.parentElement.id)
                         for (item in CartItems){
-                            if(CartItems[item]["id"] == event.target.parentElement.parentElement.id.replace("Item#","")){
+                            if(CartItems[item]["id"] == event.target.parentElement.parentElement.id.replace("Item","")){
                                 total = total - CartItems[item]["price"]
                                 ConfirmButton.innerText = `Confirm Order Total: $${Math.abs(total).toFixed(2)}`;
                                 CartItems.splice(item,1);
@@ -85,7 +91,14 @@ document.addEventListener('DOMContentLoaded', function(){
                     CancelCol.appendChild(CancelButton);
                     ItemPrice.innerHTML = `$${CartItems[item]["price"]}`;
                     if(CartItems[item]["type"] == "Pizzas"){
-                        ItemName.innerText = `${CartItems[item]["Size"]} ${CartItems[item]["Pizza_Type"]} ${CartItems[item]["Topping_Type"]} ${CartItems[item]["type"].slice(0,-1)}`;
+                        ItemName.innerText = `${CartItems[item]["Size"]} ${CartItems[item]["Pizza_Type"]} ${CartItems[item]["Topping_Type"]} ${CartItems[item]["type"].slice(0,-1)} `;
+                        if (CartItems[item]["toppings"].length != 0){
+                            ItemName.innerText += "[ "
+                            for(topping in CartItems[item]["toppings"]){
+                                ItemName.innerText += ` ${CartItems[item]["toppings"][topping]} `
+                            }
+                            ItemName.innerText += " ]"
+                        }
                     }
                     if(CartItems[item]["type"] == "Subs" || CartItems[item]["type"] == "Platters"){
                         ItemName.innerText = `${CartItems[item]["Size"]} ${CartItems[item]["name"]} ${CartItems[item]["type"].slice(0,-1)}`;
@@ -93,9 +106,6 @@ document.addEventListener('DOMContentLoaded', function(){
                     if(CartItems[item]["type"] == "Pastas" || CartItems[item]["type"] == "Salads"){
                         ItemName.innerText = `${CartItems[item]["name"]} ${CartItems[item]["type"].slice(0,-1)}`
                     }
-                    newList.appendChild(NameCol);
-                    newList.appendChild(PriceCol);
-                    newList.appendChild(CancelCol);
                     newColumn.appendChild(ConfirmButton);
                 }
                 ConfirmButton.innerText = `Confirm Order Total: $${Math.abs(total).toFixed(2)}`
@@ -119,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         Label.innerText = `Select a ${PizzaObjects[item].replace("_"," ")}`;
                         Label.value = "default";
                         Dropdown.appendChild(Label);
+                        console.log(response[item])
                         for (attribute in response[item]){
                             var Option = document.createElement('option');
                             Option.value = response[item][attribute];
@@ -130,6 +141,9 @@ document.addEventListener('DOMContentLoaded', function(){
                         DropdownDiv.appendChild(Dropdown);
                         newForm.appendChild(DropdownDiv);
                         ResponseField.appendChild(newForm);
+                    }
+                    for(var z = 1; z<4 ; z++){
+                        document.querySelector(`.Topping_${z}`).hidden = true;
                     }
                     var FilledText = document.createElement('p');
                     FilledText.className = "text-white";
@@ -144,8 +158,16 @@ document.addEventListener('DOMContentLoaded', function(){
                     let Dropdowns = document.querySelectorAll(".Dropdown");
                     Dropdowns.forEach((Dropdown) => {
                         Dropdown.addEventListener("change", (event) => {
+                            for(var z = 1; z<4 ; z++){
+                                document.querySelector(`.Topping_${z}`).hidden = true;
+                            }
+                            if(document.querySelector(`.Topping_Type`).value != 'default' && document.querySelector(`.Topping_Type`).value != 'Cheese' && document.querySelector(`.Topping_Type`).value != 'Special'){
+                                for(var z = 0; z<parseInt(document.querySelector(`.Topping_Type`).value) ; z++){
+                                    document.querySelector(`.Topping_${z+1}`).hidden = false;
+                                }
+                            }
                             var allSelected = true;
-                            for (var i = 0; i < PizzaObjects.length; i++){
+                            for (var i = 0; i < PizzaObjects.length+parseInt(document.querySelector(`.Topping_Type`).value)-3; i++){
                                 if (allSelected == true){
                                     if (document.querySelector(`.${PizzaObjects[i]}`).value == 'default'){
                                         allSelected = false;
@@ -171,11 +193,17 @@ document.addEventListener('DOMContentLoaded', function(){
                                             newButton.disabled = false;
                                         }
                                         newButton.onclick = () =>{
-                                            var Data = {"id": CartItems.length.toString(), "type":Selection,"Pizza_Type":document.querySelector(`#${PizzaObjects[0]}`).value,"Topping_Type":document.querySelector(`#${PizzaObjects[1]}`).value,"Size":document.querySelector(`#${PizzaObjects[2]}`).value,"price":PricingResponse.Price};
+                                            ToppingDict = []
+                                            for (var i = 0; i<parseInt(document.querySelector(`.Topping_Type`).value);i++){
+                                                console.log(document.querySelector(`.Topping_${i+1}`).value)
+                                                ToppingDict.push(document.querySelector(`.Topping_${i+1}`).value)
+                                            }
+                                            var Data = {"id": CartItems.length.toString(), "type":Selection,"Pizza_Type":document.querySelector(`#${PizzaObjects[0]}`).value,"Topping_Type":document.querySelector(`#${PizzaObjects[1]}`).value,"Size":document.querySelector(`#${PizzaObjects[2]}`).value,"price":PricingResponse.Price,"toppings":ToppingDict};
                                             CartItems.push(Data);
                                             Added.innerText = `Successfully added ${Data["Size"]} ${Data["Pizza_Type"]} ${Data["Topping_Type"]} Pizza to cart.`;
                                             Added.hidden = false;
                                             localStorage.setItem("CartItems",JSON.stringify(CartItems));
+                                            console.log(Data)
                                         };
                                     }
                                 }

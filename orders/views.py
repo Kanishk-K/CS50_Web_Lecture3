@@ -27,6 +27,10 @@ def AjaxSqlRequest(request):
         versions = []
         PizzaTypes = []
         sizes = []
+        ToppingList = []
+        PizzaToppingsObject = PizzaToppings.objects.all()
+        for Toppings in PizzaToppingsObject:
+            ToppingList.append(Toppings.name)
         for item in Selection.objects.all():
             if item.version not in versions:
                 versions.append(item.version)
@@ -37,6 +41,9 @@ def AjaxSqlRequest(request):
         AllSelectionOptions.append(versions)
         AllSelectionOptions.append(PizzaTypes)
         AllSelectionOptions.append(sizes)
+        AllSelectionOptions.append(ToppingList)
+        AllSelectionOptions.append(ToppingList)
+        AllSelectionOptions.append(ToppingList)
     if request.POST.get("Selection") == "Subs" or request.POST.get("Selection") == "Platters":
         AlreadyAdded = []
         for item in Selection.objects.all():
@@ -73,6 +80,15 @@ def Register(request):
     else:
         form = UserRegisterForm()
     return render(request,'orders/register.html',{'form':form})
+@require_http_methods(["POST"])
+def Toppings(request):
+    ToppingList = []
+    Selection = request.POST.get("Selection")
+    if Selection == "Pizzas":
+        PizzaToppingsObject = PizzaToppings.objects.all()
+        for Toppings in PizzaToppingsObject:
+            ToppingList.append(Toppings.name)
+        return JsonResponse({"Toppings":ToppingList})
 @require_http_methods(["POST"])
 def Order(request):
     return
