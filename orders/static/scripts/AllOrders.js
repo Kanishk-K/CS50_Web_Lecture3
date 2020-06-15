@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded",function(){
     const CSRFToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+    //For all Complete buttons present on the screen, when they are clicked update the status of the order on the server and delete the
+    //Card from the screen.
     document.querySelectorAll(".Completed").forEach((CompleteButton) => {
         CompleteButton.addEventListener("click",()=>{
             var StatusTag = CompleteButton.parentElement.querySelector(".Status");
@@ -18,6 +20,7 @@ document.addEventListener("DOMContentLoaded",function(){
             request.send(OrderPackage);
         })
     })
+    //If any Ready button is clicked update the status on the server and set the Order's status as Ready on the screen.
     document.querySelectorAll(".Ready").forEach((ReadyButton) => {
         ReadyButton.addEventListener("click",()=>{
             var StatusTag = ReadyButton.parentElement.querySelector(".Status");

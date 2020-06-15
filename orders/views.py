@@ -14,6 +14,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 # Create your views here.
 def index(request):
+    #If the user is logged in send them to the homepage logged in, else send them not logged in.
     if request.user.is_authenticated:
         print(f"User is authenticated {request.user.username}")
         return render(request, "orders/layout.html", {"logged":True,"user":request.user.username})
@@ -24,6 +25,7 @@ def index(request):
 def AjaxSqlRequest(request):
     Selection = apps.get_model('orders', request.POST.get("Selection"))
     AllSelectionOptions = []
+    #If the user selected the pizza button fetch all Pizza options, works respectively with other options as well.
     if request.POST.get("Selection") == "Pizzas":
         versions = []
         PizzaTypes = []
@@ -65,6 +67,7 @@ def AjaxSqlRequest(request):
     return HttpResponse(JsonResponse(AllSelectionOptions,safe=False))
 @require_http_methods(["POST"])
 def PriceRequest(request):
+    #If the user has created their pizza, request the server and get the price for the type of pizza they have created, else say that it's not an option.
     PizzaType = request.POST.get("Pizza_Type")
     ToppingType = request.POST.get("Topping_Type")
     Size = request.POST.get("Size")
@@ -75,6 +78,7 @@ def PriceRequest(request):
     except AttributeError:
         return JsonResponse({"Error":"Sorry that combination can't exist."})
 def Register(request):
+    #If the user has not submitted the form then send them the form, if the user has submitted the form then create an account.
     if request.method == "POST":
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -89,6 +93,7 @@ def Register(request):
 def Toppings(request):
     ToppingList = []
     Selection = request.POST.get("Selection")
+    #If the user has selected Pizza then send them all avaliable toppings for the pizza.
     if Selection == "Pizzas":
         PizzaToppingsObject = PizzaToppings.objects.all()
         for Toppings in PizzaToppingsObject:
@@ -96,15 +101,18 @@ def Toppings(request):
         return JsonResponse({"Toppings":ToppingList})
 def Orders(request):
     if request.method == "POST":
+        #If an order is posted then add it to the orders model.
         description = request.POST.get("items").replace(",","\n")
         f = Order(user_id=request.POST.get("user"),total=request.POST.get("total"),description=description)
         f.save()
         return HttpResponse("Placeholder")
     else:
+        #If the user is querying for orders then send a list of their sent orders.
         OrderList = Order.objects.filter(user_id=request.user.username)
         return render(request, "orders/UserOrders.html",{"user":request.user.username,"orders":OrderList})
 @staff_member_required
 def AllOrders(request):
+    #If the admin has changed the status of an order then update it accordingly on the database
     if request.method == "POST":
         SelectedOrder = Order.objects.filter(id=request.POST.get("id")).first()
         SelectedOrder.status = request.POST.get("action")
@@ -112,5 +120,6 @@ def AllOrders(request):
         print(SelectedOrder.status)
         return HttpResponse("Placeholder")
     else:
+        #The admin has just requested the page, thus send him a page of all pending orders.
         ActiveOrders = Order.objects.all().exclude(status="Completed")
         return render(request,'orders/AllOrders.html',{"user":request.user.username,"orders":ActiveOrders})

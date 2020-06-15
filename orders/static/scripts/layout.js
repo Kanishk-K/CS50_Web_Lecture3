@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(){
+    //Define our starting variables in order to simplify the code a bit.
     const PizzaButton = document.querySelector(".Pizza");
     const SubButton = document.querySelector(".Sub");
     const PastaButton = document.querySelector(".Pasta");
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function(){
     let CartButton = document.querySelectorAll(".Price");
     const PizzaObjects = ["Pizza_Type","Topping_Type","Size","Topping_1","Topping_2","Topping_3"];
     var total = 0;
+    //If the localStorage's cart items are not present then create an empty array otherwise fetch items from the localStorage.
     if (localStorage.getItem("CartItems") === null){
         var CartItems = [];
     }
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function(){
         Added.innerText = "Order Successfully Placed";
     }
     buttons.forEach((btn) => {
+        //Add a eventHandler for each of the 5 type selector buttons (Including the cart)
         btn.addEventListener("click", (event) => {
             document.querySelectorAll(".Response .Card").forEach(div => div.remove());
             Added.hidden = true;
@@ -40,10 +43,12 @@ document.addEventListener('DOMContentLoaded', function(){
             })
             let Selection = event.target.innerText;
             let EventObject = event.target;
-            EventObject.className = EventObject.className.replace("btn-outline-dark", "btn-dark");
+            EventObject.className = EventObject.className.replace("btn-outline-dark", "btn-dark");\
+            //Reorganize the ids of the cart items, for example if the cart ids go as 0,3,4,5 then make it 0,1,2,3
             for (item in CartItems){
                 CartItems[item]["id"] = item.toString();
             }
+            //If the cart is selected get all items in the cart and dynamically generate the cart display.
             if (Selection == ""){
                 var newColumn = document.createElement("div");
                 newColumn.className = "Card col-sm-12";
@@ -71,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     CancelButton.type = "image";
                     CancelButton.src = "/static/styles/close.png";
                     CancelButton.className = "CancelButton align-self-start"
+                    //If an order is canceled then remove it from the cart and remove the price from the total.
                     CancelButton.onclick = (event) => {
                         console.log(event.target.parentElement.parentElement.id)
                         for (item in CartItems){
@@ -124,6 +130,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     newColumn.appendChild(ConfirmButton);
                 }
                 ConfirmButton.innerText = `Confirm Order Total: $${Math.abs(total).toFixed(2)}`
+                //If the confirm button is clicked then submit the information regarding the cart to the server.
                 ConfirmButton.onclick = () => {
                     const request = new XMLHttpRequest();
                     request.open('POST', 'Orders');
@@ -148,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function(){
             request.open('POST', '/Menu');
             request.onload = () => {
                 const response = JSON.parse(request.responseText);
+                //If the Pizzabutton is clicked then generate the Pizza Display.
                 if (Selection == "Pizzas"){
                     var newForm = document.createElement('form');
                     newForm.className = "Card Holder bg-dark rounded";
@@ -207,8 +215,10 @@ document.addEventListener('DOMContentLoaded', function(){
                                     }
                                 }
                             }
+                            //If every field on the Pizza display is filled then allow the user to add to cart.
                             if (allSelected == true){
                                 console.log("Sending Request")
+                                //Get price of the pizza from Database.
                                 const pricing = new XMLHttpRequest();
                                 pricing.open('POST', '/Price');
                                 pricing.onload = () => {
@@ -250,6 +260,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         })
                     })
                 }
+                //If the button clicked is about subs and platters create a display for each item. This took a lot of coding.
                 if (Selection == "Subs" || Selection == "Platters"){
                     for(item in response){
                         if (response[item].SmallPrice != undefined){
@@ -359,6 +370,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         }
                     }
                 document.querySelectorAll(".Price").forEach((PriceButton) => {
+                    //If any of the Subs/Platters buttons are clicked then add items to cart.
                     PriceButton.addEventListener("click",(event) => {
                         if (PriceButton.className.includes("btn-success")){
                             var size = "Small"
@@ -384,6 +396,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     })
                 })
                 }
+                //If the selection is of a Pasta or Salad generate those displays dynamically
                 if (Selection == "Pastas" || Selection == "Salads"){
                     for (item in response){
                         var newTitle = document.createElement("h6");
@@ -411,6 +424,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     }
                 }
                 document.querySelectorAll(".Pricing").forEach((PriceButton) => {
+                    //When any of the buttons for Pastas/Salads are clicked then add item to cart.
                     PriceButton.addEventListener("click",(event) => {
                         var Data = {"id": CartItems.length.toString(), "type":Selection,"name":PriceButton.parentElement.querySelector("h6").innerText,"price":PriceButton.innerText.replace("$","")};
                         CartItems.push(Data);
@@ -421,6 +435,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 })
             }
             const AjaxSqlRequest = new FormData();
+            //Ask server for options on the "Selection" if the Selection is not the Cart.
             if (Selection != ""){
                 AjaxSqlRequest.append("Selection",Selection);
                 AjaxSqlRequest.append("csrfmiddlewaretoken",CSRFToken)

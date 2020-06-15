@@ -32,7 +32,7 @@ While it does have comments I'll go over a brief summary.
 
 # orders/static/scripts/layout.js
 ===================================
-This file seems to be very lengthy but it is in all aspects quite simple, the reason for its redundant length is mainly because I made an early decision to make my app dynamically generate the options rather than have Django template it which was definetely a mistake.
+This file also has comments but here is a basic overview.
 - Firstly it defines some basic variables and objects around the webpage
 - It then checks constantly if any of the selection buttons are pressed, for example if the user selects the Platters button then query for all Platter objects. Then display to the screen. (In hindsight I should have just sent a template with all the items present and used javascript to toggle the hidden feature on/off)
 - It will then take that information and dynamically generate objects to represent the information sent over.
